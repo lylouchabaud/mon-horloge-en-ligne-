@@ -1,0 +1,614 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #07111f;
+    color: #f4f6f8;
+    overflow-x: hidden;
+
+    /* couleur néon par défaut */
+    --neon: #00aaff;
+}
+
+
+/* =========================
+   BANDE NOIRE + SIGNATURE
+========================= */
+
+body::before {
+    content: "BY L.CHABAUD";
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 35px;
+
+    padding-left: 25px;
+
+    background: #000000;
+    color: var(--neon);
+
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 3px;
+
+    text-shadow:
+        0 0 5px var(--neon),
+        0 0 10px var(--neon),
+        0 0 20px var(--neon);
+}
+
+
+/* =========================
+   GRANDE HORLOGE
+========================= */
+
+.main-clock {
+    position: relative;
+    overflow: hidden;
+
+    width: 86%;
+    max-width: 1200px;
+    min-height: 430px;
+
+    margin: 70px auto;
+    padding: 70px 30px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(35, 61, 91, 0.45),
+            transparent 60%
+        ),
+        #0b1829;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+}
+
+/* Filigrane du nom du pays en arrière-plan */
+.main-clock::before {
+    content: attr(data-country);
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: clamp(50px, 11vw, 150px);
+    font-weight: 900;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    text-align: center;
+    width: 90%;
+
+    color: rgba(255, 255, 255, 0.08);
+    transition: opacity 0.5s ease;
+    
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    white-space: normal;
+}
+
+/* Masque le filigrane lorsque l'option est désactivée via le bouton */
+.main-clock.no-bg::before {
+    display: none !important;
+}
+
+/* Garantit que tous les éléments interactifs restent au premier plan */
+.main-clock > * {
+    position: relative;
+    z-index: 1;
+}
+
+#selected-city {
+    margin: 0 0 15px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 8px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+#time {
+    font-size: clamp(70px, 10vw, 150px);
+
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 4px;
+
+    color: #ffffff;
+
+    font-variant-numeric: tabular-nums;
+
+    text-shadow:
+        0 0 35px rgba(255, 255, 255, 0.08);
+}
+
+#date {
+    margin-top: 25px;
+
+    color: #ffffff;
+    opacity: 0.85;
+
+    font-size: 15px;
+
+    text-transform: capitalize;
+}
+
+
+/* =========================
+   BOUTONS DE CONTRÔLE (HAUT DROITE)
+========================= */
+
+#fullscreen-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #d8e0e8;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+}
+
+#fullscreen-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+#toggle-bg-btn {
+    position: absolute;
+    top: 60px;
+    right: 18px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #d8e0e8;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+}
+
+#toggle-bg-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   PALETTE
+========================= */
+
+.color-palette {
+    position: absolute;
+
+    top: 50%;
+    right: 30px;
+
+    transform: translateY(-50%);
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.color-btn {
+    width: 25px;
+    height: 25px;
+
+    border-radius: 50%;
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.color-btn:hover {
+    transform: scale(1.15);
+}
+
+.color-btn.bleu {
+    background: #07111f;
+}
+
+.color-btn.bordeaux {
+    background: #6e1f2a;
+}
+
+.color-btn.kaki {
+    background: #78866b;
+}
+
+
+/* =========================
+   MONDE
+========================= */
+
+.world {
+    width: 86%;
+    max-width: 1200px;
+
+    margin: 120px auto;
+}
+
+.section-number {
+    color: #8797a8;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 15px;
+}
+
+.world h2 {
+    margin: 0;
+
+    font-size: clamp(35px, 5vw, 60px);
+
+    font-weight: 400;
+}
+
+.section-text {
+    color: #8291a2;
+
+    margin-top: 15px;
+
+    font-size: 16px;
+}
+
+
+/* =========================
+   CARTES DES VILLES
+========================= */
+
+.cards {
+    margin-top: 50px;
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 15px;
+}
+
+.card {
+    padding: 28px 20px;
+
+    min-height: 210px;
+
+    background: #0b1829;
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    border-radius: 20px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s,
+        background 0.3s,
+        border-color 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+
+    background: #102238;
+
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.flag {
+    font-size: 32px;
+
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 500;
+}
+
+.card p {
+    color: #77889a;
+
+    font-size: 13px;
+
+    margin: 8px 0 25px;
+}
+
+.card strong {
+    font-size: 20px;
+
+    color: #e5eaf0;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* =========================
+   BANNIÈRE
+========================= */
+
+.banner {
+    width: 86%;
+    max-width: 1200px;
+
+    margin: 120px auto;
+
+    padding: 70px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #102238,
+            #081321
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.banner p {
+    color: #8d9aaa;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+}
+
+.banner h2 {
+    font-size: clamp(40px, 6vw, 75px);
+
+    font-weight: 400;
+
+    line-height: 0.95;
+
+    margin: 20px 0;
+}
+
+.banner span {
+    color: #8190a1;
+
+    font-size: 15px;
+}
+
+
+/* =========================
+   GLOBE
+========================= */
+
+.globe {
+    font-size: 130px;
+
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    width: 86%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 40px 0;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+    color: #667789;
+
+    font-size: 12px;
+}
+
+footer strong {
+    color: #e9edf1;
+
+    letter-spacing: 3px;
+}
+
+
+/* =========================
+   PLEIN ÉCRAN
+========================= */
+
+.main-clock:fullscreen,
+.main-clock:-webkit-full-screen {
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border-radius: 0 !important;
+
+    border: none !important;
+
+    display: flex !important;
+
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.main-clock:fullscreen #time,
+.main-clock:-webkit-full-screen #time {
+
+    font-size: 15vw !important;
+
+    color: #ffffff !important;
+}
+
+.main-clock:fullscreen #selected-city,
+.main-clock:-webkit-full-screen #selected-city {
+
+    font-size: 2.5vw !important;
+
+    letter-spacing: 10px !important;
+}
+
+.main-clock:fullscreen #date,
+.main-clock:-webkit-full-screen #date {
+
+    font-size: 2vw !important;
+
+    color: #ffffff !important;
+}
+
+
+/* =========================
+   SIGNATURE EN PLEIN ÉCRAN
+========================= */
+
+.fullscreen-signature {
+    display: none;
+}
+
+.main-clock:fullscreen .fullscreen-signature,
+.main-clock:-webkit-full-screen .fullscreen-signature {
+    display: block;
+
+    position: absolute;
+
+    bottom: 25px;
+    right: 30px;
+
+    color: var(--neon);
+
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 3px;
+
+    text-shadow:
+        0 0 5px var(--neon),
+        0 0 10px var(--neon),
+        0 0 20px var(--neon);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+    .cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .banner {
+        padding: 45px;
+    }
+
+    .globe {
+        font-size: 90px;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .main-clock,
+    .world,
+    .banner,
+    footer {
+        width: 90%;
+    }
+
+    .main-clock {
+        min-height: 350px;
+    }
+
+    #time {
+        font-size: 55px;
+        letter-spacing: 1px;
+    }
+
+    #selected-city {
+        letter-spacing: 4px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 40px;
+    }
+
+    .globe {
+        align-self: center;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
