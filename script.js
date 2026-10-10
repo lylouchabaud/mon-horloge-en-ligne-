@@ -1,3 +1,4 @@
+alert("Le fichier JS fonctionne !");
 const timeZones = {
     paris: { name: "PARIS", country: "FRANCE", zone: "Europe/Paris" },
     londres: { name: "LONDRES", country: "ROYAUME-UNI", zone: "Europe/London" },
