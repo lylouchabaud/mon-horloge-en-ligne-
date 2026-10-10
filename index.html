@@ -4,30 +4,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="style.css">
-
     <title>Horloge en ligne</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #07111f;
+            color: #f4f6f8;
+            overflow-x: hidden;
+            --neon: #00aaff;
+        }
+
+        body::before {
+            content: "BY L.CHABAUD";
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 35px;
+            padding-left: 25px;
+            background: #000000;
+            color: var(--neon);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px var(--neon), 0 0 10px var(--neon), 0 0 20px var(--neon);
+        }
+
+        .main-clock {
+            position: relative;
+            overflow: hidden;
+            width: 86%;
+            max-width: 1200px;
+            min-height: 430px;
+            margin: 70px auto;
+            padding: 70px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, rgba(35, 61, 91, 0.45), transparent 60%), #0b1829;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+        }
+
+        .main-clock::before {
+            content: attr(data-country);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(50px, 11vw, 150px);
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            text-align: center;
+            width: 90%;
+            color: rgba(255, 255, 255, 0.08);
+            transition: opacity 0.5s ease;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+            white-space: normal;
+        }
+
+        .main-clock.no-bg::before {
+            display: none !important;
+        }
+
+        .main-clock > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        #selected-city {
+            margin: 0 0 15px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+        }
+
+        #time {
+            font-size: clamp(70px, 10vw, 150px);
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: 4px;
+            color: #ffffff;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 35px rgba(255, 255, 255, 0.08);
+        }
+
+        #date {
+            margin-top: 25px;
+            color: #ffffff;
+            opacity: 0.85;
+            font-size: 15px;
+            text-transform: capitalize;
+        }
+
+        #fullscreen-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #d8e0e8;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s;
+        }
+
+        #fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        #toggle-bg-btn {
+            position: absolute;
+            top: 60px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #d8e0e8;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s;
+        }
+
+        #toggle-bg-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .color-palette {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-btn {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .color-btn.bleu { background: #07111f; }
+        .color-btn.bordeaux { background: #6e1f2a; }
+        .color-btn.kaki { background: #78866b; }
+
+        .world {
+            width: 86%;
+            max-width: 1200px;
+            margin: 120px auto;
+        }
+
+        .section-number {
+            color: #8797a8;
+            font-size: 11px;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .world h2 {
+            margin: 0;
+            font-size: clamp(35px, 5vw, 60px);
+            font-weight: 400;
+        }
+
+        .section-text {
+            color: #8291a2;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        .cards {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .card {
+            padding: 28px 20px;
+            min-height: 210px;
+            background: #0b1829;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s, border-color 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: #102238;
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .flag {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .card p {
+            color: #77889a;
+            font-size: 13px;
+            margin: 8px 0 25px;
+        }
+
+        .card strong {
+            font-size: 20px;
+            color: #e5eaf0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .banner {
+            width: 86%;
+            max-width: 1200px;
+            margin: 120px auto;
+            padding: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #102238, #081321);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .banner p {
+            color: #8d9aaa;
+            font-size: 11px;
+            letter-spacing: 4px;
+        }
+
+        .banner h2 {
+            font-size: clamp(40px, 6vw, 75px);
+            font-weight: 400;
+            line-height: 0.95;
+            margin: 20px 0;
+        }
+
+        .banner span {
+            color: #8190a1;
+            font-size: 15px;
+        }
+
+        .globe {
+            font-size: 130px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); }
+        }
+
+        footer {
+            width: 86%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #667789;
+            font-size: 12px;
+        }
+
+        footer strong {
+            color: #e9edf1;
+            letter-spacing: 3px;
+        }
+
+        .main-clock:fullscreen,
+        .main-clock:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        .main-clock:fullscreen #time,
+        .main-clock:-webkit-full-screen #time {
+            font-size: 15vw !important;
+            color: #ffffff !important;
+        }
+
+        .main-clock:fullscreen #selected-city,
+        .main-clock:-webkit-full-screen #selected-city {
+            font-size: 2.5vw !important;
+            letter-spacing: 10px !important;
+        }
+
+        .main-clock:fullscreen #date,
+        .main-clock:-webkit-full-screen #date {
+            font-size: 2vw !important;
+            color: #ffffff !important;
+        }
+
+        .fullscreen-signature {
+            display: none;
+        }
+
+        .main-clock:fullscreen .fullscreen-signature,
+        .main-clock:-webkit-full-screen .fullscreen-signature {
+            display: block;
+            position: absolute;
+            bottom: 25px;
+            right: 30px;
+            color: var(--neon);
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px var(--neon), 0 0 10px var(--neon), 0 0 20px var(--neon);
+        }
+
+        @media (max-width: 900px) {
+            .cards { grid-template-columns: repeat(2, 1fr); }
+            .banner { padding: 45px; }
+            .globe { font-size: 90px; }
+        }
+
+        @media (max-width: 600px) {
+            .main-clock, .world, .banner, footer { width: 90%; }
+            .main-clock { min-height: 350px; }
+            #time { font-size: 55px; letter-spacing: 1px; }
+            #selected-city { letter-spacing: 4px; }
+            .cards { grid-template-columns: 1fr; }
+            .banner { flex-direction: column; align-items: flex-start; gap: 40px; }
+            .globe { align-self: center; }
+            footer { flex-direction: column; gap: 15px; }
+        }
+    </style>
 </head>
 
 <body>
 
     <main>
-
-        <!-- GRANDE HORLOGE -->
-
         <section class="main-clock" id="main-clock-container" data-country="FRANCE">
-
             <button id="fullscreen-btn" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2">
-                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
-                    </path>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
                 </svg>
                 <span>Plein écran</span>
             </button>
 
-            <!-- BOUTON POUR ACTIVER/DÉSACTIVER LE FOND PAYS -->
             <button id="toggle-bg-btn" type="button">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -48,159 +412,239 @@
             </div>
 
             <div id="date">Chargement...</div>
-
         </section>
 
-
-        <!-- HORLOGES DU MONDE -->
-
         <section id="horloges" class="world">
-
             <p class="section-number">01 — WORLD CLOCKS</p>
-
             <h2>Horloges du monde</h2>
-
-            <p class="section-text">
-                Quelle heure est-il aux quatre coins du monde ?
-            </p>
-
+            <p class="section-text">Quelle heure est-il aux quatre coins du monde ?</p>
 
             <div class="cards">
-
                 <div class="card" onclick="activeKey='paris'; updateClocks();">
                     <div class="flag">🇫🇷</div>
                     <h3>Paris</h3>
                     <p>France</p>
                     <strong id="paris">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='londres'; updateClocks();">
                     <div class="flag">🇬🇧</div>
                     <h3>Londres</h3>
                     <p>Royaume-Uni</p>
                     <strong id="londres">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='newyork'; updateClocks();">
                     <div class="flag">🇺🇸</div>
                     <h3>New York</h3>
                     <p>États-Unis</p>
                     <strong id="newyork">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='tokyo'; updateClocks();">
                     <div class="flag">🇯🇵</div>
                     <h3>Tokyo</h3>
                     <p>Japon</p>
                     <strong id="tokyo">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='sydney'; updateClocks();">
                     <div class="flag">🇦🇺</div>
                     <h3>Sydney</h3>
                     <p>Australie</p>
                     <strong id="sydney">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='dubai'; updateClocks();">
                     <div class="flag">🇦🇪</div>
                     <h3>Dubaï</h3>
                     <p>Émirats arabes unis</p>
                     <strong id="dubai">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='singapour'; updateClocks();">
                     <div class="flag">🇸🇬</div>
                     <h3>Singapour</h3>
                     <p>Singapour</p>
                     <strong id="singapour">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='montreal'; updateClocks();">
                     <div class="flag">🇨🇦</div>
                     <h3>Montréal</h3>
                     <p>Canada</p>
                     <strong id="montreal">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='saopaulo'; updateClocks();">
                     <div class="flag">🇧🇷</div>
                     <h3>São Paulo</h3>
                     <p>Brésil</p>
                     <strong id="saopaulo">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='chine'; updateClocks();">
                     <div class="flag">🇨🇳</div>
                     <h3>Pékin</h3>
                     <p>Chine</p>
                     <strong id="chine">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='afriquedusud'; updateClocks();">
                     <div class="flag">🇿🇦</div>
                     <h3>Johannesbourg</h3>
                     <p>Afrique du Sud</p>
                     <strong id="afriquedusud">00:00:00</strong>
                 </div>
-
                 <div class="card" onclick="activeKey='inde'; updateClocks();">
                     <div class="flag">🇮🇳</div>
                     <h3>New Delhi</h3>
                     <p>Inde</p>
                     <strong id="inde">00:00:00</strong>
                 </div>
-
             </div>
-
         </section>
-
-
-        <!-- BANNIÈRE -->
 
         <section id="mondial" class="banner">
-
             <div>
-
                 <p>TIMEORA WORLD</p>
-
-                <h2>
-                    Le monde ne<br>
-                    s'arrête jamais.
-                </h2>
-
-                <span>
-                    Explore les différents fuseaux horaires
-                    en temps réel.
-                </span>
-
+                <h2>Le monde ne<br>s'arrête jamais.</h2>
+                <span>Explore les différents fuseaux horaires en temps réel.</span>
             </div>
-
-
-            <div class="globe">
-                🌍
-            </div>
-
+            <div class="globe">🌍</div>
         </section>
-
     </main>
 
-
-    <!-- FOOTER -->
-
     <footer>
-
         <strong>Horloge en ligne</strong>
-
-        <span>
-            © 2026 — Le temps, partout dans le monde.
-        </span>
-
+        <span>© 2026 — Le temps, partout dans le monde.</span>
     </footer>
 
+    <script>
+        const timeZones = {
+            paris: { name: "PARIS", country: "FRANCE", zone: "Europe/Paris" },
+            londres: { name: "LONDRES", country: "ROYAUME-UNI", zone: "Europe/London" },
+            newyork: { name: "NEW YORK", country: "ÉTATS-UNIS", zone: "America/New_York" },
+            tokyo: { name: "TOKYO", country: "JAPON", zone: "Asia/Tokyo" },
+            sydney: { name: "SYDNEY", country: "AUSTRALIE", zone: "Australia/Sydney" },
+            dubai: { name: "DUBAÏ", country: "ÉMIRATS ARABES UNIS", zone: "Asia/Dubai" },
+            singapour: { name: "SINGAPOUR", country: "SINGAPOUR", zone: "Asia/Singapore" },
+            montreal: { name: "MONTRÉAL", country: "CANADA", zone: "America/Toronto" },
+            saopaulo: { name: "SÃO PAULO", country: "BRÉSIL", zone: "America/Sao_Paulo" },
+            chine: { name: "PÉKIN", country: "CHINE", zone: "Asia/Shanghai" },
+            afriquedusud: { name: "JOHANNESBOURG", country: "AFRIQUE DU SUD", zone: "Africa/Johannesburg" },
+            inde: { name: "NEW DELHI", country: "INDE", zone: "Asia/Kolkata" }
+        };
 
-    <script src="script.js"></script>
+        let activeKey = "paris";
 
+        function updateClocks() {
+            const now = new Date();
+
+            for (const key in timeZones) {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.textContent = now.toLocaleTimeString("fr-FR", {
+                        timeZone: timeZones[key].zone,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false
+                    });
+                }
+            }
+
+            const active = timeZones[activeKey];
+            const time = document.getElementById("time");
+            const date = document.getElementById("date");
+            const city = document.getElementById("selected-city");
+            const mainClockContainer = document.getElementById("main-clock-container");
+
+            if (time) {
+                time.textContent = now.toLocaleTimeString("fr-FR", {
+                    timeZone: active.zone,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                });
+            }
+
+            if (date) {
+                date.textContent = now.toLocaleDateString("fr-FR", {
+                    timeZone: active.zone,
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                });
+            }
+
+            if (city) {
+                city.textContent = active.name;
+            }
+
+            if (mainClockContainer) {
+                mainClockContainer.setAttribute("data-country", active.country);
+            }
+        }
+
+        updateClocks();
+        setInterval(updateClocks, 1000);
+
+        const fullscreenBtn = document.getElementById("fullscreen-btn");
+        const mainClockContainer = document.getElementById("main-clock-container");
+
+        if (fullscreenBtn && mainClockContainer) {
+            fullscreenBtn.addEventListener("click", function() {
+                if (!document.fullscreenElement) {
+                    mainClockContainer.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+        }
+
+        const toggleBgBtn = document.getElementById("toggle-bg-btn");
+
+        if (toggleBgBtn && mainClockContainer) {
+            toggleBgBtn.addEventListener("click", function() {
+                mainClockContainer.classList.toggle("no-bg");
+                if (mainClockContainer.classList.contains("no-bg")) {
+                    toggleBgBtn.style.opacity = "0.4";
+                } else {
+                    toggleBgBtn.style.opacity = "1";
+                }
+            });
+        }
+
+        const bleu = document.getElementById("bleu-btn");
+        const bordeaux = document.getElementById("bordeaux-btn");
+        const kaki = document.getElementById("kaki-btn");
+
+        function changerCouleur(fond, cartes, bannieres, neon) {
+            document.body.style.background = fond;
+            document.querySelectorAll(".main-clock, .card").forEach(function(element) {
+                element.style.background = cartes;
+            });
+            document.querySelectorAll(".banner").forEach(function(element) {
+                element.style.background = bannieres;
+            });
+            document.body.style.setProperty("--neon", neon);
+        }
+
+        if (bleu) {
+            bleu.addEventListener("click", function() {
+                changerCouleur("#07111f", "#0b1829", "linear-gradient(135deg, #102238, #081321)", "#00aaff");
+            });
+        }
+
+        if (bordeaux) {
+            bordeaux.addEventListener("click", function() {
+                changerCouleur("#260d12", "#3a141b", "#3a141b", "#ff1744");
+            });
+        }
+
+        if (kaki) {
+            kaki.addEventListener("click", function() {
+                changerCouleur("#30382a", "#3f4936", "#3f4936", "#b6ff00");
+            });
+        }
+
+        window.addEventListener("load", function() {
+            window.scrollTo(0, 0);
+        });
+    </script>
 </body>
 
 </html>
