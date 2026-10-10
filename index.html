@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>Horloge en ligne</title>
+</head>
+
+<body>
+
+    <main>
+
+        <!-- GRANDE HORLOGE -->
+
+        <section class="main-clock" id="main-clock-container" data-country="FRANCE">
+
+            <button id="fullscreen-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                    </path>
+                </svg>
+                <span>Plein écran</span>
+            </button>
+
+            <!-- BOUTON POUR ACTIVER/DÉSACTIVER LE FOND PAYS -->
+            <button id="toggle-bg-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    <path d="M2 12h20"></path>
+                </svg>
+                <span>Fond pays</span>
+            </button>
+
+            <p id="selected-city">PARIS</p>
+            <span class="fullscreen-signature">BY L.CHABAUD</span>
+            <div id="time">00:00:00</div>
+          
+            <div class="color-palette">
+                <button class="color-btn bleu" id="bleu-btn"></button>
+                <button class="color-btn bordeaux" id="bordeaux-btn"></button>
+                <button class="color-btn kaki" id="kaki-btn"></button>
+            </div>
+
+            <div id="date">Chargement...</div>
+
+        </section>
+
+
+        <!-- HORLOGES DU MONDE -->
+
+        <section id="horloges" class="world">
+
+            <p class="section-number">01 — WORLD CLOCKS</p>
+
+            <h2>Horloges du monde</h2>
+
+            <p class="section-text">
+                Quelle heure est-il aux quatre coins du monde ?
+            </p>
+
+
+            <div class="cards">
+
+                <div class="card" onclick="activeKey='paris'; updateClocks();">
+                    <div class="flag">🇫🇷</div>
+                    <h3>Paris</h3>
+                    <p>France</p>
+                    <strong id="paris">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='londres'; updateClocks();">
+                    <div class="flag">🇬🇧</div>
+                    <h3>Londres</h3>
+                    <p>Royaume-Uni</p>
+                    <strong id="londres">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='newyork'; updateClocks();">
+                    <div class="flag">🇺🇸</div>
+                    <h3>New York</h3>
+                    <p>États-Unis</p>
+                    <strong id="newyork">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='tokyo'; updateClocks();">
+                    <div class="flag">🇯🇵</div>
+                    <h3>Tokyo</h3>
+                    <p>Japon</p>
+                    <strong id="tokyo">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='sydney'; updateClocks();">
+                    <div class="flag">🇦🇺</div>
+                    <h3>Sydney</h3>
+                    <p>Australie</p>
+                    <strong id="sydney">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='dubai'; updateClocks();">
+                    <div class="flag">🇦🇪</div>
+                    <h3>Dubaï</h3>
+                    <p>Émirats arabes unis</p>
+                    <strong id="dubai">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='singapour'; updateClocks();">
+                    <div class="flag">🇸🇬</div>
+                    <h3>Singapour</h3>
+                    <p>Singapour</p>
+                    <strong id="singapour">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='montreal'; updateClocks();">
+                    <div class="flag">🇨🇦</div>
+                    <h3>Montréal</h3>
+                    <p>Canada</p>
+                    <strong id="montreal">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='saopaulo'; updateClocks();">
+                    <div class="flag">🇧🇷</div>
+                    <h3>São Paulo</h3>
+                    <p>Brésil</p>
+                    <strong id="saopaulo">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='chine'; updateClocks();">
+                    <div class="flag">🇨🇳</div>
+                    <h3>Pékin</h3>
+                    <p>Chine</p>
+                    <strong id="chine">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='afriquedusud'; updateClocks();">
+                    <div class="flag">🇿🇦</div>
+                    <h3>Johannesbourg</h3>
+                    <p>Afrique du Sud</p>
+                    <strong id="afriquedusud">00:00:00</strong>
+                </div>
+
+                <div class="card" onclick="activeKey='inde'; updateClocks();">
+                    <div class="flag">🇮🇳</div>
+                    <h3>New Delhi</h3>
+                    <p>Inde</p>
+                    <strong id="inde">00:00:00</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BANNIÈRE -->
+
+        <section id="mondial" class="banner">
+
+            <div>
+
+                <p>TIMEORA WORLD</p>
+
+                <h2>
+                    Le monde ne<br>
+                    s'arrête jamais.
+                </h2>
+
+                <span>
+                    Explore les différents fuseaux horaires
+                    en temps réel.
+                </span>
+
+            </div>
+
+
+            <div class="globe">
+                🌍
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <strong>Horloge en ligne</strong>
+
+        <span>
+            © 2026 — Le temps, partout dans le monde.
+        </span>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
